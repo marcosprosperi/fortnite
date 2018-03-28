@@ -1,8 +1,7 @@
 if (!(process.env.GAE_SERVICE || process.env.GOOGLE_CLOUD_PROJECT))
   require('dotenv').config({ silent: true })
-const express = require('express')
 const axios = require('axios')
-const app = express()
+const app = require('express')()
 const datastore = require('@google-cloud/datastore')()
 app.enable('trust proxy')
 axios.defaults.headers.common['X-Key'] = process.env.FORTNITE_STATS_KEY
@@ -57,22 +56,14 @@ player_data_to_row = (d0, d1, d7) => {
   return "\n|" + padded_cell(d0.player, 0) + padded_cell(kd, 1) + padded_cell(kd1d, 2) + padded_cell(kd7d, 3)
 }
 
-sleep_between_requests = () => {
-  return new Promise(resolve => setTimeout(resolve, 2000))
-}
+sleep_between_requests = () => new Promise(resolve => setTimeout(resolve, 2000))
 
-fetch_player_data = p => {
-  return new Promise(resolve => {
-    axios.get(`https://fortnite.y3n.co/v2/player/${ p }`).then(r => resolve({ ...r.data.br.stats.pc, player: p }))
-  })
-}
+fetch_player_data = p => new Promise(resolve => axios.get(`https://fortnite.y3n.co/v2/player/${ p }`).then(r => resolve({ ...r.data.br.stats.pc, player: p })))
 
-store_players_data = data => {
-  return datastore.upsert({
+store_players_data = data => datastore.upsert({
     key: datastore.key(['Stats', today()]),
     data: { date: today(), stats: data }
   })
-}
 
 retrieve_old_data = ago => {
   let q = datastore.createQuery('Stats').filter('date', '=', days_ago(ago))
