@@ -1,0 +1,26 @@
+{
+  "name": "fortnite-hook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node app.js",
+    "deploy": "gcloud app deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhanubis/fortnite-hook.git"
+  },
+  "author": "Pablo Bianciotto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akhanubis/fortnite-hook/issues"
+  },
+  "homepage": "https://github.com/akhanubis/fortnite-hook#readme",
+  "dependencies": {
+    "@google-cloud/datastore": "^1.4.0",
+    "axios": "^0.18.0",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3"
+  }
+}
