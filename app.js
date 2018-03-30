@@ -19,7 +19,7 @@ const players = [
 const sizes = [20, 6, 6, 6, 9, 9, 9, 6, 6, 6]
 const headers = ['Player', 'K-D', 'K-D 1d', 'K-D 7d', 'W', 'W 1d', 'W 7d', 'K/D', 'K/D 1d', 'K/D 7d']
 
-padded_cell = (text, column_i) => ((text === 'NaN' ? 'nil' : text) + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
+padded_cell = (text, column_i) => (text + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
 
 table_header = () => headers.reduce((out, h, i) => out + padded_cell(h, i), '|')
 
@@ -64,9 +64,9 @@ player_data_to_row = (d0, d1, d7) => {
       w = `${ d0.all.wins } (${ d0.all.matchesPlayed ? (d0.all.wins * 100 / d0.all.matchesPlayed).toFixed(0) : 'nil' }%)`,
       w1d = `${ delta_w_1d } (${ delta_m_1d ? (delta_w_1d * 100 / delta_m_1d).toFixed(0) : 'nil' }%)`,
       w7d = `${ delta_w_7d } (${ delta_m_7d ? (delta_w_7d * 100 / delta_m_7d).toFixed(0) : 'nil' }%)`,
-      kperd = (d0.all.kills / d0.all.deaths).toFixed(2)
-      kperd1d = (delta_k_1d / delta_d_1d).toFixed(2)
-      kperd7d = (delta_k_7d / delta_d_7d).toFixed(2)
+      kperd = d0.all.deaths ? (d0.all.kills / d0.all.deaths).toFixed(2) : 'nil'
+      kperd1d = delta_d_1d ? (delta_k_1d / delta_d_1d).toFixed(2) : 'nil'
+      kperd7d = delta_d_1d ? (delta_k_7d / delta_d_7d).toFixed(2) : 'nil'
   return [d0.player, kd, kd1d, kd7d, w, w1d, w7d, kperd, kperd1d, kperd7d].reduce((row, value, index) => row + padded_cell(value, index), "\n|")
 }
 
