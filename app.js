@@ -21,7 +21,11 @@ const headers = ['Player', 'K-D', 'K-D 1d', 'K-D 7d', 'K/D', 'K/D 1d', 'K/D 7d',
 
 padded_cell = (text, column_i) => (text + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
 
-table_header = () => headers.reduce((out, h, i) => out + padded_cell(h, i), '|')
+table_header = () => {
+  let headers_row = headers.reduce((out, h, i) => out + padded_cell(h, i), '|'),
+      delimiter_row = sizes.reduce((out, size, i) => out + padded_cell('-'.repeat(size), i), '|')
+  return `${ headers_row }\n${ delimiter_row }`
+}
 
 format_date = d => {
   dd = d.getDate(),
