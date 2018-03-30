@@ -16,7 +16,7 @@ const players = [
   "ramanujans"
 ];
 
-const sizes = [20, 6, 6, 6, 8, 8, 8, 6, 6, 6]
+const sizes = [20, 6, 6, 6, 9, 9, 9, 6, 6, 6]
 const headers = ['Player', 'K-D', 'K-D 1d', 'K-D 7d', 'W', 'W 1d', 'W 7d', 'K/D', 'K/D 1d', 'K/D 7d']
 
 padded_cell = (text, column_i) => ((text === 'NaN' ? 'nil' : text) + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
@@ -61,9 +61,9 @@ player_data_to_row = (d0, d1, d7) => {
       kd = d0.all.kills - d0.all.deaths,
       kd1d = delta_k_1d - delta_d_1d,
       kd7d = delta_k_7d - delta_d_7d,
-      w = `${ d0.all.wins } (${ (d0.all.wins / d0.all.matchesPlayed).toFixed(0) }%)`,
-      w1d = `${ delta_w_1d } (${ (delta_w_1d / delta_m_1d).toFixed(0) }%)`,
-      w7d = `${ delta_w_7d } (${ (delta_w_7d / delta_m_7d).toFixed(0) }%)`,
+      w = `${ d0.all.wins } (${ d0.all.matchesPlayed ? (d0.all.wins * 100 / d0.all.matchesPlayed).toFixed(0) : 'nil' }%)`,
+      w1d = `${ delta_w_1d } (${ delta_m_1d ? (delta_w_1d * 100 / delta_m_1d).toFixed(0) : 'nil' }%)`,
+      w7d = `${ delta_w_7d } (${ delta_m_7d ? (delta_w_7d * 100 / delta_m_7d).toFixed(0) : 'nil' }%)`,
       kperd = (d0.all.kills / d0.all.deaths).toFixed(2)
       kperd1d = (delta_k_1d / delta_d_1d).toFixed(2)
       kperd7d = (delta_k_7d / delta_d_7d).toFixed(2)
