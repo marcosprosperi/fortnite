@@ -16,10 +16,10 @@ const players = [
   "ramanujans"
 ];
 
-const sizes = [20, 6, 6, 6]
-const headers = ['Player', 'K-D', 'K-D 1d', 'K-D 7d']
+const sizes = [20, 6, 6, 6, 8, 8, 8, 6, 6, 6]
+const headers = ['Player', 'K-D', 'K-D 1d', 'K-D 7d', 'W', 'W 1d', 'W 7d', 'K/D', 'K/D 1d', 'K/D 7d']
 
-padded_cell = (text, column_i) => (text + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
+padded_cell = (text, column_i) => ((text === 'NaN' ? 'nil' : text) + ' '.repeat(sizes[column_i])).slice(0, sizes[column_i]) + '|'
 
 table_header = () => headers.reduce((out, h, i) => out + padded_cell(h, i), '|')
 
@@ -50,10 +50,24 @@ delta_to_table = (d_0, d_1, d_7) => {
 }
 
 player_data_to_row = (d0, d1, d7) => {
-  let kd = d0.all.kills - d0.all.deaths,
-      kd1d = d0.all.kills - d1.all.kills - d0.all.deaths + d1.all.deaths
-      kd7d = d0.all.kills - d7.all.kills - d0.all.deaths + d7.all.deaths
-  return "\n|" + padded_cell(d0.player, 0) + padded_cell(kd, 1) + padded_cell(kd1d, 2) + padded_cell(kd7d, 3)
+  let delta_k_1d = d0.all.kills - d1.all.kills,
+      delta_k_7d = d0.all.kills - d7.all.kills,
+      delta_d_1d = d0.all.deaths - d1.all.deaths,
+      delta_d_7d = d0.all.deaths - d7.all.deaths,
+      delta_w_1d = d0.all.wins - d1.all.wins,
+      delta_w_7d = d0.all.wins - d7.all.wins,
+      delta_m_1d = d0.all.matchesPlayed - d1.all.matchesPlayed,
+      delta_m_7d = d0.all.matchesPlayed - d7.all.matchesPlayed,
+      kd = d0.all.kills - d0.all.deaths,
+      kd1d = delta_k_1d - delta_d_1d,
+      kd7d = delta_k_7d - delta_d_7d,
+      w = `${ d0.all.wins } (${ (d0.all.wins / d0.all.matchesPlayed).toFixed(0) }%)`,
+      w1d = `${ delta_w_1d } (${ (delta_w_1d / delta_m_1d).toFixed(0) }%)`,
+      w7d = `${ delta_w_7d } (${ (delta_w_7d / delta_m_7d).toFixed(0) }%)`,
+      kperd = (d0.all.kills / d0.all.deaths).toFixed(2)
+      kperd1d = (delta_k_1d / delta_d_1d).toFixed(2)
+      kperd7d = (delta_k_7d / delta_d_7d).toFixed(2)
+  return [d0.player, kd, kd1d, kd7d, w, w1d, w7d, kperd, kperd1d, kperd7d].reduce((row, value, index) => row + padded_cell(value, index), "\n|")
 }
 
 sleep_between_requests = () => new Promise(resolve => setTimeout(resolve, 2000))
