@@ -2,3 +2,6 @@ cron:
 - description: "daily update of fortnite stats"
   url: /store_stats
   schedule: every day 03:00
+- description: "daily post of fortnite stats in discord"
+  url: /show_stats
+  schedule: every day 03:10

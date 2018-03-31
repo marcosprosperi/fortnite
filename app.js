@@ -81,15 +81,14 @@ fetch_player_data = p => new Promise(resolve => axios.get(`https://fortnite.y3n.
 store_players_data = data => datastore.upsert({
     key: datastore.key(['Stats', today()]),
     data: { date: today(), stats: data }
-  })
+  }).then(() => console.log('Data stored'))
 
-retrieve_data = date => {
-  let q = datastore.createQuery('Stats').filter('date', '=', date)
+retrieve_data = ago => {
+  let q = datastore.createQuery('Stats').filter('date', '=', days_ago(ago))
   return datastore.runQuery(q)
 }
 
-async function cron_job(_, res) {
-  res.status(200).end()
+async function fetch_current_data() {
   let ps = [...players], data = []
   while (ps.length) {
     p = ps.shift()
@@ -98,19 +97,23 @@ async function cron_job(_, res) {
     data = data.concat(p_data)
     await sleep_between_requests()
   }
-  await store_players_data(data)
-  console.log('Data stored')
+  return data
 }
-  
+
 async function show_stats(_, res) {
   res.status(200).end()
-  let old_results = await Promise.all([retrieve_data(today()), retrieve_data(days_ago(1)), retrieve_data(days_ago(7))])
-  data_0d = old_results[0][0][0].stats
-  data_1d = old_results[1][0][0].stats
-  data_7d = old_results[2][0][0].stats
+  let current_data = await fetch_current_data()
+  let old_results = await Promise.all([retrieve_data(1), retrieve_data(7)])
+  data_1d = old_results[0][0][0].stats
+  data_7d = old_results[1][0][0].stats
   axios.post(process.env.WEBHOOK, {
-    content: delta_to_table(data_0d, data_1d, data_7d)
+    content: delta_to_table(current_data, data_1d, data_7d)
   }).then(() => console.log('Stats posted'))
+}
+
+async function cron_job(_, res) {
+  res.status(200).end()
+  store_players_data(await fetch_current_data())
 }
 
 app.get('/store_stats', cron_job)
