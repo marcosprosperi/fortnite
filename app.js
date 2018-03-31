@@ -67,7 +67,7 @@ player_data_to_row = (d0, d1, d7) => {
       kd7d = delta_k_7d - delta_d_7d,
       kperd = d0.all.deaths ? (d0.all.kills / d0.all.deaths).toFixed(2) : '',
       kperd1d = delta_d_1d ? (delta_k_1d / delta_d_1d).toFixed(2) : '',
-      kperd7d = delta_d_1d ? (delta_k_7d / delta_d_7d).toFixed(2) : '',
+      kperd7d = delta_d_7d ? (delta_k_7d / delta_d_7d).toFixed(2) : '',
       w = d0.all.matchesPlayed ? `${ d0.all.wins } (${ (d0.all.wins * 100 / d0.all.matchesPlayed).toFixed(0) }%)` : '',
       w1d = delta_m_1d ? `${ delta_w_1d } (${ (delta_w_1d * 100 / delta_m_1d).toFixed(0) }%)` : '',
       w7d = delta_m_7d ? `${ delta_w_7d } (${ (delta_w_7d * 100 / delta_m_7d).toFixed(0) }%)` : ''
