@@ -83,36 +83,38 @@ store_players_data = data => datastore.upsert({
     data: { date: today(), stats: data }
   })
 
-retrieve_old_data = ago => {
-  let q = datastore.createQuery('Stats').filter('date', '=', days_ago(ago))
+retrieve_data = date => {
+  let q = datastore.createQuery('Stats').filter('date', '=', date)
   return datastore.runQuery(q)
 }
 
-async function job(_, res) {
+async function cron_job(_, res) {
   res.status(200).end()
-  let ps = [...players], data_0d = []
+  let ps = [...players], data = []
   while (ps.length) {
     p = ps.shift()
     console.log(`Fetching ${ p }...`)
     let p_data = await fetch_player_data(p)
-    data_0d = data_0d.concat(p_data)
+    data = data.concat(p_data)
     await sleep_between_requests()
   }
-  await store_players_data(data_0d)
-  let old_results = await Promise.all([retrieve_old_data(1), retrieve_old_data(7)])
-  data_1d = old_results[0][0][0].stats
-  data_7d = old_results[1][0][0].stats
+  await store_players_data(data)
+  console.log('Data stored')
+}
+  
+async function show_stats(_, res) {
+  res.status(200).end()
+  let old_results = await Promise.all([retrieve_data(today()), retrieve_data(days_ago(1)), retrieve_data(days_ago(7))])
+  data_0d = old_results[0][0][0].stats
+  data_1d = old_results[1][0][0].stats
+  data_7d = old_results[2][0][0].stats
   axios.post(process.env.WEBHOOK, {
     content: delta_to_table(data_0d, data_1d, data_7d)
   }).then(() => console.log('Stats posted'))
 }
 
-app.get('/trigger_job', job)
-
-app.get('/', () => {
-  res.status(200).end()
-  console.log("It's alive")
-})
+app.get('/store_stats', cron_job)
+app.get('/show_stats', show_stats)
 
 const PORT = process.env.PORT || 8080
 app.listen(process.env.PORT || 8080, () => {

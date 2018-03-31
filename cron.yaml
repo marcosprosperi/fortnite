@@ -1,4 +1,4 @@
 cron:
 - description: "daily update of fortnite stats"
-  url: /trigger_job
-  schedule: every day 17:00
+  url: /store_stats
+  schedule: every day 03:00
